@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebSocket</title>
+    </head>
+    <body>
+        <h1> Messages list </h1>
+
+        <form>
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button> Send </button>
+        </form>
+
+        <ul id='messages'>
+        </ul>
+
+        <script>
+            const wsConnection = new WebSocket(`ws://localhost:8000/ws`)
+            const form_ = document.querySelector('form');
+
+            wsConnection.onmessage = (event) => {
+                let jsonData = JSON.parse(event.data)
+
+                let messages = document.getElementById('messages')
+                let message = document.createElement('li')
+                let content = document.createTextNode(jsonData.text)
+
+                message.appendChild(content)
+                messages.appendChild(message)
+            }
+
+            form_.addEventListener('click', (event) => {
+                let input = document.getElementById("messageText")
+
+                let message = {
+                    'text': input.value
+                }
+
+                if (input.value) {
+                    wsConnection.send(JSON.stringify(message))
+                }
+
+                input.value = ''
+                event.preventDefault()
+            })
+        </script>
+    </body>
+</html>
